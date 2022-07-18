@@ -1,0 +1,124 @@
+<app-navbar></app-navbar>
+<section class="vh-100" style="background-color: #f4f5f7; margin-top: -53px;">
+    <div class="container py-5 h-100">
+        <div class="row d-flex justify-content-center align-items-center h-100">
+            <div class="col col-lg-6 mb-4 mb-lg-0">
+                <div class="card mb-3 mt-4 border border-dark" style="border-radius: .5rem;">
+                    <div class="row g-0">
+                        <div class="col-md-4 gradient-custom text-center text-dark"
+                            style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
+                            <img *ngIf="!userGetData.image"
+                                src="../../../assets/dummy_100x100_ffffff_cccccc_no-image.png" crossorigin="anonymous"
+                                alt="Avatar" class="img-fluid my-5"
+                                style="width: 100px; height: 100px; border-radius: 50%;" />
+                            <img *ngIf="userGetData.image" src="{{ uri }}" crossorigin="anonymous" alt="Avatar"
+                                class="img-fluid my-5 img-profile"
+                                style="width: 100px; height: 100px; border-radius: 50%;">
+                            <h5>{{ userGetData.name }} {{ userGetData.surname }}</h5>
+                            <p>{{ userGetData.username }}</p>
+
+                            <span *ngIf="userGetData.role == 'CLIENT' || userGetData.role == 'HOTELADMIN'">
+                                <i (click)="getProfile()" data-bs-toggle="offcanvas"
+                                    data-bs-target="#offcanvasGetProfile"
+                                    class="fa-solid fa-pen-to-square m-1 mb-5 text-warning icon-profile"
+                                    style="font-size: 1.5rem;"></i>
+                                <i (click)="deleteProfile()" class="fa-solid fa-trash m-1 text-danger mb-5 icon-profile"
+                                    style="font-size: 1.5rem;"></i>
+                            </span>
+                            <i data-bs-toggle="modal" data-bs-target="#modalUploadImage"
+                                class="fa-solid fa-camera m-1 text-primary mb-5 icon-profile"
+                                style="font-size: 1.5rem;"></i>
+
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body p-4">
+                                <h6>Datos generales</h6>
+                                <hr class="mt-0 mb-4">
+                                <div class="row pt-1">
+                                    <div class="col-6 mb-3">
+                                        <h6>Correo Electrónico</h6>
+                                        <p class="text-muted">{{ userGetData.email }}</p>
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <h6>Teléfono</h6>
+                                        <p class="text-muted">{{ userGetData.phone }}</p>
+                                    </div>
+                                </div>
+
+                                <div *ngIf="userGetData.role == 'CLIENT'">
+                                    <h6>Historial</h6>
+                                    <hr class="mt-0 mb-4">
+                                    <div class="row pt-1">
+                                        <div class="col-6 mb-3">
+                                            <button type="button" class="btn btn-primary m-1">Hoteles</button>
+                                            <button type="button" class="btn btn-primary m-1">Facturas</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Modal upload image-->
+<div class="modal fade" id="modalUploadImage" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Cambiar imagen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="image" class="form-label">Imagen: </label>
+                    <input (change)="filesChange($event)" type="file" class="form-control" id="image">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Descartar</button>
+                <button (click)="uploadImage()" type="button" data-bs-dismiss="modal"
+                    class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Offcanvas get user-->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasGetProfile">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Editar datos</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <form (ngSubmit)="updateProfile()" *ngIf="user">
+            <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <input [(ngModel)]="user.name" name="name" type="text" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Apellido</label>
+                <input [(ngModel)]="user.surname" name="surname" type="text" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Nombre de usuario</label>
+                <input [(ngModel)]="user.username" name="username" type="text" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Correo electrónico</label>
+                <input [(ngModel)]="user.email" name="email" type="text" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Teléfono</label>
+                <input [(ngModel)]="user.phone" name="phone" type="text" class="form-control">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="offcanvas">Descartar cambios</button>
+                <button type="submit" class="btn btn-primary" data-bs-dismiss="offcanvas">Actualizar cambios</button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,195 @@
+<app-navbar></app-navbar>
+
+<div class="bg m-0 d-flex justify-content-center align-items-center" *ngIf="reserveExist == false">
+    <h1>Actualmente no cuentas con una reservación :(</h1>
+</div>
+
+<div class="bg m-0 pt-4 p-0" *ngIf="reserveExist == true">
+
+    <div class="row justify-content-center">
+
+        <div class="col-xl-5">
+            <div class="card mb-3 mx-auto border border-dark" style="max-width: 60%;">
+                <div class="row g-0">
+                    <div>
+                        <img *ngIf="hotel.hasOwnProperty('image') == false"
+                            src="../../../../assets/dummy_2000x1500_ffffff_cccccc_-no-image.jpg"
+                            class="img-fluid rounded">
+                        <img *ngIf="hotel.image" src="http://localhost:3200/hotel/getImageHotel/{{ hotel.image }}"
+                            crossorigin="anonymous" class="img-fluid rounded" style="height: 100%;">
+                    </div>
+                    <div>
+                        <div class="card-body">
+                            <h5 class="card-title h2 mb-0">{{ hotel.name }}</h5>
+                            <div class="card-text"> Teléfono: {{ hotel.phone }}</div>
+                            <div class="card-text">Dirección: {{ hotel.address }}</div>
+                            <hr>
+                            <div class="d-flex justify-content-center flex-wrap m-1">
+                                <button (click)="getServicesClient()" class="btn btn-primary m-1 px-4"
+                                    data-bs-toggle="modal" data-bs-target="#modalGetServices">Servicios</button>
+                                <button (click)="getEventsClient()" class="btn btn-primary m-1 px-4" data-bs-toggle="modal"
+                                    data-bs-target="#modalGetEvents">Eventos</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="card m-2 border border-dark" style="width: 18rem;">
+                    <div class="card-body">
+                        <h4 class="card-title text-center">{{ room.name }}</h4>
+                        <hr>
+                        <h5 class="card-title">Q{{ room.price }} por día</h5>
+                        <p class="card-subtitle mb-2">{{ room.description }}</p>
+                    </div>
+                </div>
+                <div class="card m-2 border border-dark" style="width: 18rem;">
+                    <div class="card-body">
+                        <h4 class="card-title text-center">Reservación</h4>
+                        <hr>
+                        <h5 class="card-title">{{ reserve.startDate + ' al ' + reserve.endDate }}</h5>
+                        <p class="card-subtitle mb-2">Cuenta: Q{{ reserve.totalPrice }}</p>
+                        <p class="card-subtitle mb-2">Estado: {{ reserve.state }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-5">
+            <h2 class="text-center">Servicios en tu reservación</h2>
+            <div class="row justify-content-center">
+                <div *ngFor="let service of services" class="card m-2 border border-dark" style="width: 18rem;">
+                    <div class="card-body">
+                        <h4 class="card-title text-center">{{ service.service.name }}</h4>
+                        <hr>
+                        <h5 class="card-title">Q{{ service.service.price }}</h5>
+                        <h5 class="card-title">Cantidad: {{ service.quantity }}</h5>
+                        <p class="card-subtitle mb-2">{{ service.service.description }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalGetServices" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div *ngIf="servicesHotelLenght == 0" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Servicios</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h2 class="text-center">Lo sentimos, este hotel no cuenta con servicios actualmente :(</h2>
+            </div>
+        </div>
+        <div *ngIf="servicesHotelLenght > 0" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Servicios</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <div class="mx-auto m-1" style="min-width: 115.7px; width: 15vw;">
+                        <input [(ngModel)]="searchService" type="text" class="form-control"
+                            placeholder="Buscar servicio">
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row justify-content-center px-4">
+                    <div *ngFor="let serviceHotel of servicesHotel | searchService:searchService" class="card m-2"
+                        style="width: 18rem;">
+                        <div class="card-body">
+                            <h4 class="card-title text-center">{{ serviceHotel.name }}</h4>
+                            <hr>
+                            <h5 class="card-title">Q{{ serviceHotel.price }}</h5>
+                            <p class="card-subtitle mb-2">{{ serviceHotel.description }}</p>
+
+                            <div class="btn-group d-flex mt-2" role="group">
+                                <button (click)="getIdServiceHotel(serviceHotel._id, serviceHotel)"
+                                    class="btn flex-grow-1 btn-success" data-bs-toggle="modal"
+                                    data-bs-target="#modalAddService">Añadir a mi reservación</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalGetEvents" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div *ngIf="eventsHotelLenght == 0" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Eventos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h2 class="text-center">Lo sentimos, este hotel no cuenta con eventos actualmente :(</h2>
+            </div>
+        </div>
+        <div *ngIf="eventsHotelLenght > 0" class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Eventos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <div class="mx-auto m-1" style="min-width: 115.7px; width: 15vw;">
+                        <input [(ngModel)]="searchEvent" type="text" class="form-control"
+                            placeholder="Buscar evento">
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row justify-content-center px-4">
+                    <div *ngFor="let eventHotel of eventsHotel | searchEvent:searchEvent" class="card m-2"
+                        style="width: 18rem;">
+                        <div class="card-body">
+                            <h4 class="card-title text-center">{{ eventHotel.name }}</h4>
+                            <hr>
+                            <h5 class="card-title">{{ eventHotel.dateEvent }}</h5>
+                            <p class="card-subtitle mb-2">{{ eventHotel.category }}</p>
+                            <p class="card-subtitle mb-2">{{ eventHotel.description }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalAddService" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Añadir servicio</h5>
+                <button type="button" class="btn-close" data-bs-toggle="modal"
+                    data-bs-target="#modalGetServices"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label class="form-label">Precio total (Q)</label>
+                    <input [(ngModel)]="price" name="previewPrice" type="number" class="form-control" disabled>
+                </div>
+                <form #addServiceForm="ngForm" (ngSubmit)="addServiceMyReserve(addServiceForm)">
+                    <div class="mb-3">
+                        <label class="form-label">Cantidad</label>
+                        <input [(ngModel)]="quantity" name="quantity" type="number" class="form-control" min="1">
+                    </div>
+                    <div class="modal-footer d-flex justify-content-center">
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                            data-bs-target="#modalGetServices">Descartar</button>
+                        <button (click)="calculatePrice()" type="button" class="btn btn-primary">Calcular</button>
+                        <button type="submit" class="btn btn-success" data-bs-dismiss="modal">Añadir</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

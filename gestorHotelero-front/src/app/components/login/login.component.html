@@ -1,0 +1,51 @@
+<app-navbar></app-navbar>
+
+<section class="bg-content d-flex justify-content-center align-items-center">
+    <div class="container mb-5 pb-5">
+        <div class="row d-flex justify-content-center align-items-center">
+            <div class="col-xl-6">
+                <h1 class="mb-4">Iniciar sesión</h1>
+                <div class="card" style="border-radius: 15px;">
+                    <div class="card-body">
+
+                        <form #loginForm="ngForm" (ngSubmit)="login()">
+                            <div class="row align-items-center pt-4 pb-3">
+                                <div class="col">
+                                    <span class="requiredData" *ngIf="!username.valid && username.touched">
+                                        *Campo obligatorio
+                                    </span>
+
+                                    <input [(ngModel)]="user.username" #username="ngModel" name="name" type="text"
+                                        class="form-control form-control-lg" placeholder="Nombre de usuario" required>
+                                </div>
+
+                                <div class="col">
+                                    <span class="requiredData" *ngIf="!password.valid && password.touched">
+                                        *Campo obligatorio
+                                    </span>
+
+                                    <input [(ngModel)]="user.password" #password="ngModel" name="password" type="password"
+                                        class="form-control form-control-lg" placeholder="Contraseña" required>
+                                </div>
+                            </div>
+
+                            <hr class="mx-n3">
+
+                            <div class="px-5 pt-3 pb-4 text-center">
+                                <button [disabled]="!loginForm.form.valid" type="submit"
+                                    class="btn btn-primary btn-lg">Iniciar sesión</button>
+                            </div>
+                        </form>
+
+                        <div class="text-center">
+                            <p>¿Aún no tienes una cuenta? <a routerLink="/register" class="fw-bold">Regístrate</a>
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>

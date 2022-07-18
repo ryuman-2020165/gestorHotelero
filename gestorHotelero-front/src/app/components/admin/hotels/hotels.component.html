@@ -1,0 +1,125 @@
+<app-navbar></app-navbar>
+<div class="text-center m-3">
+    <button class="btn btn-success m-1" data-bs-toggle="modal" data-bs-target="#modalAddHotel">Agregar hotel</button>
+    <div class="input-group mx-auto m-1" style="min-width: 115.7px; width: 15vw;">
+        <input [(ngModel)]="searchHotel" type="text" class="form-control" placeholder="Buscar hotel"
+            aria-describedby="btnSearch">
+    </div>
+</div>
+
+<hr>
+
+<div class="d-flex flex-column">
+    <div *ngFor="let hotel of hotels | searchHotel:searchHotel" class="card mb-3 mx-auto" style="max-width: 60%;">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img *ngIf="hotel.hasOwnProperty('image') == false"
+                    src="../../../../assets/dummy_2000x1500_ffffff_cccccc_-no-image.jpg" class="img-fluid rounded">
+                <img *ngIf="hotel.image" src="http://localhost:3200/hotel/getImageHotel/{{ hotel.image }}"
+                    crossorigin="anonymous" class="img-fluid rounded" style="height: 100%;">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title h2 mb-0">{{ hotel.name }}</h5>
+                    <div class="card-subtitle mb-0 text-muted fst-italic">{{ hotel._id }}
+                    </div>
+                    <div class="card-subtitle mb-2 text-muted">Administrador: {{
+                        hotel.adminHotel.username + ' | ' + hotel.adminHotel.name + ' ' +
+                        hotel.adminHotel.surname }}
+                    </div>
+                    <div class="card-subtitle mb-1 text-muted fst-italic">Veces reservado: {{ hotel.timesRequest }}
+                    </div>
+                    <div class="card-text"> Teléfono: {{ hotel.phone }}</div>
+                    <div class="card-text">Dirección: {{ hotel.address }}</div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-center flex-wrap m-1">
+                        <button (click)="getHotelOnlyAdmin(hotel._id)" class="btn btn-warning m-1 px-4 btn-sm"
+                            data-bs-toggle="offcanvas" data-bs-target="#offcanvasGetHotel"
+                            aria-controls="offcanvasGetHotel">Editar</button>
+                        <button (click)="deleteHotelOnlyAdmin(hotel._id)"
+                            class="btn btn-danger m-1 px-4 btn-sm">Eliminar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal add hotel-->
+<div class="modal fade" id="modalAddHotel" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar hotel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form #addHotelForm="ngForm" (ngSubmit)="addHotelOnlyAdmin(addHotelForm)">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input [(ngModel)]="hotel.name" name="name" type="text" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Admnistrador</label>
+                        <select [(ngModel)]="hotel.adminHotel" name="adminHotel" class="form-select">
+                            <option *ngFor="let user of users" value="{{ user._id }}">{{ user.username + ' | ' +
+                                user.name + ' ' + user.surname }}</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Dirección</label>
+                        <input [(ngModel)]="hotel.address" name="address" type="text" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Teléfono</label>
+                        <input [(ngModel)]="hotel.phone" placeholder="+502 ---- ----" name="phone" type="text"
+                            class="form-control">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Descartar</button>
+                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Agregar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Offcanvas get hotel-->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasGetHotel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasGetHotel">Editar hotel</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <form (ngSubmit)="updateHotelOnlyAdmin()" *ngIf="hotelGetData">
+            <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <input [(ngModel)]="hotelGetData.name" name="name" type="text" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Admnistrador</label>
+                <select [(ngModel)]="hotelGetData.adminHotel" name="adminHotel" class="form-select">
+                    <option *ngFor="let user of users" value="{{ user._id }}">{{ user.username + ' | ' +
+                        user.name + ' ' + user.surname }}</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Dirección</label>
+                <input [(ngModel)]="hotelGetData.address" name="address" type="text" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Teléfono</label>
+                <input [(ngModel)]="hotelGetData.phone" name="phone" type="text" class="form-control">
+            </div>
+            <div class="modal-footer px-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="offcanvas">Descartar
+                    cambios</button>
+                <button type="submit" class="btn btn-primary" data-bs-dismiss="offcanvas">Actualizar
+                    cambios</button>
+            </div>
+        </form>
+    </div>
+</div>

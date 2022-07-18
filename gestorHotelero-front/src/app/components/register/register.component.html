@@ -1,0 +1,140 @@
+<app-navbar></app-navbar>
+
+<section class="bg-content p-5">
+    <div class="container">
+        <div class="row d-flex justify-content-center align-items-center">
+            <div class="col-xl-7">
+                <h1 class="mb-4">Registrarse</h1>
+                <div class="card" style="border-radius: 15px;">
+                    <div class="card-body">
+
+                        <form #registerForm="ngForm" (ngSubmit)="register()">
+                            <div class="row align-items-center pt-4 pb-3">
+                                <div class="col-md-3 ps-5">
+                                    <h6 class="mb-0">Nombre completo</h6>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <span class="requiredData" *ngIf="!name.valid && name.touched">
+                                        *Campo obligatorio
+                                    </span>
+
+                                    <input [(ngModel)]="user.name" #name="ngModel" name="name" type="text"
+                                        class="form-control form-control-lg" placeholder="Nombres" required>
+                                </div>
+
+                                <div class="col-md-5 pe-5">
+                                    <span class="requiredData" *ngIf="!surname.valid && surname.touched">
+                                        *Campo obligatorio
+                                    </span>
+
+                                    <input [(ngModel)]="user.surname" #surname="ngModel" name="surname" type="text"
+                                        class="form-control form-control-lg" placeholder="Apellidos" required>
+                                </div>
+                            </div>
+
+                            <hr class="mx-n3">
+
+                            <div class="row align-items-center py-3">
+                                <div class="col-md-3 ps-5">
+                                    <h6 class="mb-0">Nombre de usuario</h6>
+                                </div>
+
+                                <div class="col-md-9 pe-5">
+
+                                    <span class="requiredData" *ngIf="!username.valid && username.touched">
+                                        *Campo obligatorio
+                                    </span>
+
+                                    <input [(ngModel)]="user.username" #username="ngModel" name="username" type="text"
+                                        class="form-control form-control-lg" placeholder="Nombre de usuario" required>
+                                </div>
+                            </div>
+
+                            <hr class="mx-n3">
+
+                            <div class="row align-items-center py-3">
+                                <div class="col-md-3 ps-5">
+                                    <h6 class="mb-0">Correo electrónico</h6>
+                                </div>
+                                <div class="col-md-9 pe-5">
+                                    <span class="requiredData" *ngIf="!email.valid && email.touched">
+                                        *Campo obligatorio
+                                    </span>
+
+                                    <input [(ngModel)]="user.email" #email="ngModel" name="email" type="email"
+                                        class="form-control form-control-lg" placeholder="ejemplo@ejemplo.com" required>
+                                </div>
+                            </div>
+
+                            <hr class="mx-n3">
+
+                            <div class="row align-items-center pt-4 pb-3">
+                                <div class="col-md-3 ps-5">
+                                    <h6 class="mb-0">Contraseña</h6>
+                                </div>
+
+                                <div class="col-md-4">
+                                    <span class="requiredData" *ngIf="!password.valid && password.touched">
+                                        *Campo obligatorio
+                                    </span>
+
+                                    <input (keyup)="checkPassword()" [(ngModel)]="user.password" #password="ngModel"
+                                        name="password" type="password" class="form-control form-control-lg"
+                                        placeholder="Contraseña" required>
+                                </div>
+                                <div class="col-md-5 pe-5">
+                                    <span class="requiredData" *ngIf="!repeatPassword.valid && repeatPassword.touched">
+                                        *Campo obligatorio
+                                    </span>
+
+                                    <input (keyup)="checkPassword()" [(ngModel)]="repeatPass" #repeatPassword="ngModel"
+                                        name="repeatPass" type="password" class="form-control form-control-lg"
+                                        placeholder="Repite tu contraseña" required>
+                                </div>
+                            </div>
+
+                            <hr class="mx-n3">
+
+                            <div class="row align-items-center py-3">
+                                <div class="col-md-3 ps-5">
+                                    <h6 class="mb-0">Número de teléfono</h6>
+                                </div>
+                                <div class="col-md-9 pe-5">
+                                    <span class="requiredData" *ngIf="!phone.valid && phone.touched">
+                                        *Campo obligatorio
+                                    </span>
+
+                                    <input [(ngModel)]="user.phone" #phone="ngModel" name="phone" type="text"
+                                        class="form-control form-control-lg" placeholder="+502 ---- ----" required>
+                                </div>
+                            </div>
+
+                            <hr class="mx-n3">
+
+                            <p class="text-center pt-3">
+                                <input ngModel name="checkboxTerms" class="form-check-input" type="checkbox" required>
+                                <label class="form-check-label ms-2">Aceptar <a
+                                        href="https://en.wikipedia.org/wiki/Contractual_term" target="_blank"
+                                        rel="noopener noreferrer">terminos y condiciones</a></label>
+                            </p>
+
+                            <div class="px-5 pt-3 pb-4 text-center">
+                                <button [disabled]="!registerForm.form.valid" type="submit"
+                                    class="btn btn-primary btn-lg">Registrarse</button>
+                            </div>
+                        </form>
+
+                        <div class="text-center">
+                            <p>¿Ya tienes una cuenta? <a routerLink="/login" class="fw-bold">Inicia
+                                    sesión</a>
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>

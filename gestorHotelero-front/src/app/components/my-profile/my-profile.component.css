@@ -1,0 +1,21 @@
+.gradient-custom {
+    background: rgb(208, 218, 224);
+    background: linear-gradient(171deg, rgba(208, 218, 224, 1) 0%, rgba(226, 235, 240, 1) 100%);
+}
+
+.icon-profile {
+    cursor: pointer;
+}
+
+.img-fluid {
+    width: 100%;
+    height: auto;
+}
+
+@supports(object-fit: cover) {
+    .img-fluid {
+        height: 100%;
+        object-fit: cover;
+        object-position: center center;
+    }
+}

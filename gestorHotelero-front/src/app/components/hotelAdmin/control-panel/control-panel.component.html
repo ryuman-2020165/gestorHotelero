@@ -1,0 +1,699 @@
+<app-navbar></app-navbar>
+
+<div class="text-center m-3">
+    <button class="btn btn-success m-1" data-bs-toggle="modal" data-bs-target="#modalAddHotel">Agregar hotel</button>
+    <div class="input-group mx-auto m-1" style="min-width: 115.7px; width: 15vw;">
+        <input [(ngModel)]="searchHotel" type="text" class="form-control" placeholder="Buscar hotel"
+            aria-describedby="btnSearch">
+    </div>
+</div>
+
+<hr>
+
+<div class="d-flex flex-column">
+    <div *ngFor="let hotel of hotels | searchHotel:searchHotel" class="card mb-3 mx-auto" style="max-width: 60%;">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img *ngIf="hotel.hasOwnProperty('image') == false"
+                    src="../../../../assets/dummy_2000x1500_ffffff_cccccc_-no-image.jpg" class="img-fluid rounded">
+                <img *ngIf="hotel.image" src="http://localhost:3200/hotel/getImageHotel/{{ hotel.image }}"
+                    crossorigin="anonymous" class="img-fluid rounded" style="height: 100%;">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title h2 mb-0">{{ hotel.name }}</h5>
+                    <div class="card-subtitle mb-1 text-muted fst-italic">Veces reservado: {{ hotel.timesRequest }}
+                    </div>
+                    <div class="card-text"> Teléfono: {{ hotel.phone }}</div>
+                    <div class="card-text">Dirección: {{ hotel.address }}</div>
+
+                    <hr>
+
+                    <div class="d-flex justify-content-center flex-wrap m-1">
+                        <button (click)="getRooms(hotel._id)" class="btn btn-primary m-1 px-4 btn-sm"
+                            data-bs-toggle="modal" data-bs-target="#modalGetRooms">Habitaciones</button>
+                        <button (click)="getServices(hotel._id)" class="btn btn-primary m-1 px-4 btn-sm"
+                            data-bs-toggle="modal" data-bs-target="#modalGetServices">Servicios</button>
+                        <button (click)="getEvents(hotel._id)" class="btn btn-primary m-1 px-4 btn-sm"
+                            data-bs-toggle="modal" data-bs-target="#modalGetEvents">Eventos</button>
+                        <button (click)="getIdHotel(hotel._id)" class="btn btn-primary m-1 px-4 btn-sm"
+                            data-bs-toggle="modal" data-bs-target="#modalUploadImage">Cambiar foto</button>
+                    </div>
+
+                    <div class="d-flex justify-content-center flex-wrap m-1">
+                        <button (click)="getReservations(hotel._id)" class="btn btn-secondary m-1 px-4 btn-sm"
+                            data-bs-toggle="modal" data-bs-target="#modalGetReservations">Reservaciones</button>
+                        <button class="btn btn-secondary m-1 px-4 btn-sm">Facturas</button>
+                    </div>
+
+                    <div class="d-flex justify-content-center flex-wrap m-1">
+                        <button (click)="getHotel(hotel._id)" class="btn btn-warning m-1 px-4 btn-sm"
+                            data-bs-toggle="offcanvas" data-bs-target="#offcanvasGetHotel"
+                            aria-controls="offcanvasGetHotel">Editar</button>
+                        <button (click)="deleteHotel(hotel._id)"
+                            class="btn btn-danger m-1 px-4 btn-sm">Eliminar</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal upload image-->
+<div class="modal fade" id="modalUploadImage" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Cambiar imagen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="image" class="form-label">Imagen: </label>
+                    <input (change)="filesChange($event)" type="file" class="form-control" id="image">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Descartar</button>
+                <button (click)="uploadImage()" type="button" data-bs-dismiss="modal"
+                    class="btn btn-primary">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal add hotel-->
+<div class="modal fade" id="modalAddHotel" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Agregar hotel</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form #addHotelForm="ngForm" (ngSubmit)="addHotel(addHotelForm)">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input [(ngModel)]="hotel.name" name="name" type="text" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Dirección</label>
+                        <input [(ngModel)]="hotel.address" name="address" type="text" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Teléfono</label>
+                        <input [(ngModel)]="hotel.phone" placeholder="+502 ---- ----" name="phone" type="text"
+                            class="form-control">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Descartar</button>
+                        <button type="submit" class="btn btn-primary" data-bs-dismiss="modal">Agregar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Offcanvas get hotel-->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasGetHotel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="offcanvasGetHotel">Editar hotel</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        <form (ngSubmit)="updateHotel()" *ngIf="hotelGetData">
+            <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <input [(ngModel)]="hotelGetData.name" name="name" type="text" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Dirección</label>
+                <input [(ngModel)]="hotelGetData.address" name="address" type="text" class="form-control">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Teléfono</label>
+                <input [(ngModel)]="hotelGetData.phone" name="phone" type="text" class="form-control">
+            </div>
+            <div class="modal-footer px-0">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="offcanvas">Descartar cambios</button>
+                <button type="submit" class="btn btn-primary" data-bs-dismiss="offcanvas">Actualizar cambios</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal get rooms -->
+<div class="modal fade" id="modalGetRooms" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Habitaciones</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <button class="btn btn-success m-1" data-bs-toggle="modal" data-bs-target="#modalAddRoom">
+                        Agregar habitación
+                    </button>
+
+                    <br>
+
+                    <button class="btn btn-secondary m-1" (click)="toggleSearch()">
+                        {{ labelFilter }}
+                    </button>
+
+                    <div class="mx-auto m-1" style="min-width: 115.7px; width: 15vw;">
+                        <input [(ngModel)]="searchRoom" type="text" class="form-control m-1"
+                            placeholder="Buscar habitación">
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="table-responsive-xxl">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Descripción</th>
+                                <th scope="col">Precio</th>
+                                <th scope="col">Disponibilidad</th>
+                                <th scope="col">Fecha disponible</th>
+                                <th scope="col">Ocupado por</th>
+                                <th scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let room of rooms | searchRoom:searchRoom">
+                                <th scope="row">{{ room.name }}</th>
+                                <td>{{ room.description }}</td>
+                                <td>Q{{ room.price }}</td>
+                                <td *ngIf="room.available == true" class="text-success">Disponible</td>
+                                <td *ngIf="room.available == false" class="text-danger">No disponible</td>
+                                <td>{{ room.dateAvailable }}</td>
+                                <td *ngIf="room.hasOwnProperty('currentUser') == true ">
+                                    {{ room.currentUser.username + ' - ' }}
+                                    {{ room.currentUser.name + ' ' +
+                                    room.currentUser.surname }}</td>
+                                <td *ngIf="room.hasOwnProperty('currentUser') == false ">Libre</td>
+                                <td>
+                                    <button (click)="getRoom(room._id)" class="btn btn-warning m-1"
+                                        data-bs-toggle="modal" data-bs-target="#modalGetRoom">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                    <button (click)="deleteRoom(room._id)" class="btn btn-danger m-1">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal add room -->
+<div class="modal fade" id="modalAddRoom" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalAddRoom">Agregar habitación</h5>
+                <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#modalGetRooms"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form #addRoomForm="ngForm" (ngSubmit)="addRoom(addRoomForm)">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input [(ngModel)]="room.name" name="name" type="text" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="descriptionTextArea">Descripción</label>
+                        <textarea [(ngModel)]="room.description" name="description" class="form-control"
+                            id="descriptionTextArea" style="height: 100px"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Precio por día</label>
+                        <input [(ngModel)]="room.price" name="price" type="number" class="form-control" min="0.01"
+                            step="0.1">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                            data-bs-target="#modalGetRooms">Descartar</button>
+                        <button type="submit" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#modalGetRooms">Agregar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal get room -->
+<div class="modal fade" id="modalGetRoom" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalGetRoom">Editar habitación</h5>
+                <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#modalGetRooms"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form (ngSubmit)="updateRoom()" *ngIf="roomGetData">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input [(ngModel)]="roomGetData.name" name="name" type="text" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea [(ngModel)]="roomGetData.description" name="description" class="form-control"
+                            id="descriptionTextArea" style="height: 100px"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Precio</label>
+                        <input [(ngModel)]="roomGetData.price" name="price" type="number" class="form-control" min="1"
+                            step="1">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Disponibilidad</label>
+                        <select [(ngModel)]="roomGetData.available" name="available" class="form-select">
+                            <option value="true">Disponible</option>
+                            <option value="false">No disponible</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fecha disponible</label>
+                        <input [(ngModel)]="roomGetData.dateAvailable" name="dateAvailable" type="text"
+                            class="form-control">
+                    </div>
+                    <div class="modal-footer px-0">
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                            data-bs-target="#modalGetRooms">Descartar cambios</button>
+                        <button type="submit" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#modalGetRooms">Actualizar cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal get services -->
+<div class="modal fade" id="modalGetServices" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Servicios</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <button class="btn btn-success m-1" data-bs-toggle="modal" data-bs-target="#modalAddService">
+                        Agregar servicio
+                    </button>
+
+                    <div class="mx-auto m-1" style="min-width: 115.7px; width: 15vw;">
+                        <input [(ngModel)]="searchService" type="text" class="form-control"
+                            placeholder="Buscar servicio">
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="table-responsive-xxl">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Descripción</th>
+                                <th scope="col">Precio</th>
+                                <th scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let service of services | searchService:searchService">
+                                <th scope="row">{{ service.name }}</th>
+                                <td>{{ service.description }}</td>
+                                <td>Q{{ service.price }}</td>
+                                <td>
+                                    <button (click)="getService(service._id)" class="btn btn-warning m-1"
+                                        data-bs-toggle="modal" data-bs-target="#modalGetService"
+                                        aria-controls="modalGetService">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                    <button (click)="deleteService(service._id)" class="btn btn-danger m-1">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal add service -->
+<div class="modal fade" id="modalAddService" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalAddService">Agregar servicio</h5>
+                <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#modalGetServices"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form #addServiceForm="ngForm" (ngSubmit)="addService(addServiceForm)">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input [(ngModel)]="service.name" name="name" type="text" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label for="descriptionTextArea">Descripción</label>
+                        <textarea [(ngModel)]="service.description" name="description" class="form-control"
+                            id="descriptionTextArea" style="height: 100px"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Precio</label>
+                        <input [(ngModel)]="service.price" name="price" type="number" class="form-control" min="0.01"
+                            step="0.1">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                            data-bs-target="#modalGetServices">Descartar</button>
+                        <button type="submit" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#modalGetServices">Agregar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal get service -->
+<div class="modal fade" id="modalGetService" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalGetRoom">Editar servicio</h5>
+                <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#modalGetServices"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form (ngSubmit)="updateService()" *ngIf="serviceGetData">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input [(ngModel)]="serviceGetData.name" name="name" type="text" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea [(ngModel)]="serviceGetData.description" name="description" class="form-control"
+                            id="descriptionTextArea" style="height: 100px"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Precio</label>
+                        <input [(ngModel)]="serviceGetData.price" name="price" type="number" class="form-control"
+                            min="1" step="1">
+                    </div>
+                    <div class="modal-footer px-0">
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                            data-bs-target="#modalGetServices">Descartar cambios</button>
+                        <button type="submit" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#modalGetServices">Actualizar cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal get events -->
+<div class="modal fade" id="modalGetEvents" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Eventos</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <button class="btn btn-success m-1" data-bs-toggle="modal" data-bs-target="#modalAddEvent">
+                        Agregar evento
+                    </button>
+
+                    <div class="mx-auto m-1" style="min-width: 115.7px; width: 15vw;">
+                        <input [(ngModel)]="searchEvent" type="text" class="form-control" placeholder="Buscar evento">
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="table-responsive-xxl">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th scope="col">Nombre</th>
+                                <th scope="col">Descripción</th>
+                                <th scope="col">Categoría</th>
+                                <th scope="col">Fecha</th>
+                                <th scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let event of events | searchEvent:searchEvent">
+                                <th scope="row">{{ event.name }}</th>
+                                <td>{{ event.description }}</td>
+                                <td>{{ event.category }}</td>
+                                <td>{{ event.dateEvent }}</td>
+                                <td>
+                                    <button (click)="getEvent(event._id)" class="btn btn-warning m-1"
+                                        data-bs-toggle="modal" data-bs-target="#modalGetEvent"
+                                        aria-controls="modalGetEvent">
+                                        <i class="fa-solid fa-pen-to-square"></i>
+                                    </button>
+                                    <button (click)="deleteEvent(event._id)" class="btn btn-danger m-1">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal add event -->
+<div class="modal fade" id="modalAddEvent" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalAddEvent">Agregar evento</h5>
+                <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#modalGetEvents"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form #addEventForm="ngForm" (ngSubmit)="addEvent(addEventForm)">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input [(ngModel)]="event.name" name="name" type="text" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea [(ngModel)]="event.description" name="description" class="form-control"
+                            id="descriptionTextArea" style="height: 100px"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Categoria</label>
+                        <input [(ngModel)]="event.category" name="category" type="text" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fecha</label>
+                        <input [(ngModel)]="event.dateEvent" name="dateEvent" id="datePickerAddEvent" min="{{ today }}"
+                            type="date" class="form-control">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                            data-bs-target="#modalGetEvents">Descartar</button>
+                        <button type="submit" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#modalGetEvents">Agregar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal get event -->
+<div class="modal fade" id="modalGetEvent" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalGetRoom">Editar servicio</h5>
+                <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#modalGetEvents"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form (ngSubmit)="updateEvent()" *ngIf="eventGetData">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre</label>
+                        <input [(ngModel)]="eventGetData.name" name="name" type="text" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea [(ngModel)]="eventGetData.description" name="description" class="form-control"
+                            id="descriptionTextArea" style="height: 100px"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Categoria</label>
+                        <input [(ngModel)]="eventGetData.category" name="category" type="text" class="form-control">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Fecha</label>
+                        <input [(ngModel)]="eventGetData.dateEvent" name="dateEvent" min="{{ today }}" type="date"
+                            class="form-control">
+                    </div>
+                    <div class="modal-footer px-0">
+                        <button type="button" class="btn btn-secondary" data-bs-toggle="modal"
+                            data-bs-target="#modalGetEvents">Descartar cambios</button>
+                        <button type="submit" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#modalGetEvents">Actualizar cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal get reservations -->
+<div class="modal fade" id="modalGetReservations" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Reservaciones</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center">
+                    <button class="btn btn-secondary m-1" (click)="toggleSearchReservations()">
+                        {{ labelFilterReservation }}
+                    </button>
+
+                    <div class="mx-auto m-1" style="min-width: 115.7px; width: 15vw;">
+                        <input [(ngModel)]="searchReservation" type="text" class="form-control m-1"
+                            placeholder="Buscar cliente">
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="table-responsive-xxl">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th scope="col">Fecha de inicio</th>
+                                <th scope="col">Fecha de final</th>
+                                <th scope="col">Total</th>
+                                <th scope="col">Estado</th>
+                                <th scope="col">Cliente</th>
+                                <th scope="col">Habitación</th>
+                                <th scope="col">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let reservation of reservations | searchReservationUser: searchReservation">
+                                <th>{{ reservation.startDate }}</th>
+                                <th>{{ reservation.endDate }}</th>
+                                <td>Q{{ reservation.totalPrice }}</td>
+                                <td *ngIf="reservation.state == 'En curso'" class="text-primary">{{ reservation.state }}
+                                </td>
+                                <td *ngIf="reservation.state == 'Facturada'" class="text-success">{{ reservation.state
+                                    }}</td>
+                                <td *ngIf="reservation.state == 'Cancelada'" class="text-warning">{{ reservation.state
+                                    }}</td>
+                                <td *ngIf="reservation.state == 'Cancelada y facturada'" class="text-danger">{{
+                                    reservation.state }}</td>
+                                <td>
+                                    {{ reservation.user.username + ' - ' }}
+                                    {{ reservation.user.name + ' ' + reservation.user.surname }}
+                                </td>
+                                <td>
+                                    {{ reservation.room.name + ' - Q' + reservation.room.price }}
+                                </td>
+                                <td>
+                                    <button (click)="getReservation(reservation._id)" data-bs-toggle="modal"
+                                        data-bs-target="#modalGetReservationDetails" class="btn btn-primary m-1"
+                                        title="Mas información">
+                                        <i class="fa-solid fa-circle-info"></i>
+                                    </button>
+                                    <button (click)="checkInReservation(reservation._id)"
+                                        *ngIf="reservation.state == 'En curso' || reservation.state == 'Cancelada'"
+                                        class="btn btn-success m-1" title="Facturar">
+                                        <i class="fa-solid fa-file-invoice-dollar"></i>
+                                    </button>
+                                    <button (click)="cancelReservation(reservation._id)"
+                                        *ngIf="reservation.state == 'En curso'" class="btn btn-danger m-1"
+                                        title="Cancelar reservación">
+                                        <i class="fa-solid fa-circle-minus"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalGetReservationDetails" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detalles de la reservación</h5>
+                <button type="button" class="btn-close" data-bs-toggle="modal"
+                    data-bs-target="#modalGetReservations"></button>
+            </div>
+            <div class="modal-body" *ngIf="reservationGetData">
+                <div class="row justify-content-center px-4">
+                    <div class="card m-2" style="width: 18rem;">
+                        <div class="card-body">
+                            <h4 class="card-title text-center">{{ reservationGetData.user.username }}</h4>
+                            <hr>
+                            <h5 class="card-title">{{ reservationGetData.user.name + ' ' +
+                                reservationGetData.user.surname }}</h5>
+                            <p class="card-subtitle mb-2">{{ reservationGetData.user.email }}</p>
+                            <p class="card-subtitle mb-2">
+                                {{ reservationGetData.user.phone }}</p>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row justify-content-center px-4">
+                    <div *ngFor="let serviceReservation of servicesReservation" class="card m-2" style="width: 18rem;">
+                        <div class="card-body">
+                            <h4 class="card-title text-center">{{ serviceReservation.service.name }}</h4>
+                            <hr>
+                            <h5 class="card-title">Q{{ serviceReservation.service.price }}</h5>
+                            <h5 class="card-title">Cantidad: {{ serviceReservation.quantity }}</h5>
+                            <p class="card-subtitle mb-2">{{ serviceReservation.service.description }}</p>
+
+                            <div class="btn-group d-flex" role="group">
+                                <button (click)="deleteServiceReservation(serviceReservation._id)"
+                                    *ngIf="reservationGetData.state == 'En curso'"
+                                    class="btn flex-grow-1 btn-danger">Quitar
+                                    servicio</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

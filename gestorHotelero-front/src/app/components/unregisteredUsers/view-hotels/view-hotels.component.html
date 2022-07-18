@@ -1,0 +1,31 @@
+<app-navbar></app-navbar>
+
+<div class="text-center m-3">
+    <div class="input-group mx-auto m-1" style="min-width: 115.7px; width: 15vw;">
+        <input [(ngModel)]="searchHotel" type="text" class="form-control" placeholder="Buscar hotel"
+            aria-describedby="btnSearch">
+    </div>
+</div>
+
+<hr>
+
+<div class="d-flex flex-column">
+    <div *ngFor="let hotel of hotels | searchHotel:searchHotel" class="card mb-3 mx-auto" style="max-width: 60%;">
+        <div class="row g-0">
+            <div class="col-md-4">
+                <img *ngIf="hotel.hasOwnProperty('image') == false"
+                    src="../../../../assets/dummy_2000x1500_ffffff_cccccc_-no-image.jpg" class="img-fluid rounded">
+                <img *ngIf="hotel.image" src="http://localhost:3200/hotel/getImageHotel/{{ hotel.image }}"
+                    crossorigin="anonymous" class="img-fluid rounded" style="height: 100%;">
+            </div>
+            <div class="col-md-8">
+                <div class="card-body">
+                    <h5 class="card-title h2 mb-0">{{ hotel.name }}</h5>
+                    <div class="card-text"> Teléfono: {{ hotel.phone }}</div>
+                    <div class="card-text">Dirección: {{ hotel.address }}</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

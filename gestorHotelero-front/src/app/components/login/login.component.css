@@ -1,0 +1,10 @@
+.bg-content {
+    height: 100vh;
+    margin-top: -53px;
+    background: rgb(208, 218, 224);
+    background: linear-gradient(171deg, rgba(208, 218, 224, 1) 0%, rgba(226, 235, 240, 1) 100%);
+}
+
+.requiredData {
+    color: indianred;
+}
